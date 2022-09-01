@@ -13,6 +13,7 @@ from webob.request import Request
 import ckan.plugins as p
 from ckanext.security.cache.login import LoginThrottle
 from ckanext.security.model import SecurityTOTP, ReplayAttackException
+from paste.deploy.converters import asbool
 
 log = logging.getLogger(__name__)
 
@@ -105,15 +106,21 @@ class CKANLoginThrottle(UsernamePasswordAuthenticator):
             # Increment the throttle counter if the login failed.
             throttle.increment()
 
-        # if the CKAN authenticator has successfully authenticated
-        # the request and the user wasn't locked out above,
-        # then check the TOTP parameter to see if it is valid
-        if auth_user_name is not None:
-            totp_success = self.authenticate_totp(environ, auth_user_name)
-            # if TOTP was successful -- reset the log in throttle
-            if totp_success:
-                throttle.reset()
-                return totp_success
+        # totp authentication is enabled by default for all users
+        # totp can be disabled, if needed, by setting
+        # ckanext.security.disable_totp to True in configurations
+        if asbool(config.get('ckanext.security.disable_totp', False)):
+            return auth_user_name
+        else:
+            # if the CKAN authenticator has successfully authenticated
+            # the request and the user wasn't locked out above,
+            # then check the TOTP parameter to see if it is valid
+            if auth_user_name is not None:
+                totp_success = self.authenticate_totp(environ, auth_user_name)
+                # if TOTP was successful -- reset the log in throttle
+                if totp_success:
+                    throttle.reset()
+                    return totp_success
 
     def authenticate_totp(self, environ, auth_user):
         totp_challenger = SecurityTOTP.get_for_user(auth_user)
