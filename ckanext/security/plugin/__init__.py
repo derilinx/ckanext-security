@@ -106,5 +106,5 @@ class CkanSecurityPlugin(MixinPlugin, p.SingletonPlugin):
     def get_helpers(self):
         return {
             'check_ckan_version': tk.check_ckan_version,
-            'security_disable_totp': security_enable_totp,
+            'security_enable_totp': security_enable_totp,
         }
