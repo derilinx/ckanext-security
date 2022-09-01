@@ -47,7 +47,7 @@
     {{ form.input('password2', type='password', label=_('Confirm Password'), id='field-password-confirm', value=data.password2, error=errors.password2, classes=['control-medium'], attrs={'autocomplete': 'off'}) }}
   </fieldset>
 
-  {% if not h.security_disable_totp() %}
+  {% if h.security_enable_totp() %}
     <fieldset>
       <legend>{{_('Two factor authentication')}}</legend>
       {% if h.check_ckan_version('2.9') %}
