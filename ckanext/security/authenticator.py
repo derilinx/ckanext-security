@@ -8,12 +8,11 @@ if six.PY2:
 
 from ckan.lib.authenticator import UsernamePasswordAuthenticator
 from ckan.model import User
-from ckan.common import config
 from webob.request import Request
 import ckan.plugins as p
+from ckan.plugins.toolkit import asbool, config
 from ckanext.security.cache.login import LoginThrottle
 from ckanext.security.model import SecurityTOTP, ReplayAttackException
-from paste.deploy.converters import asbool
 
 log = logging.getLogger(__name__)
 
@@ -109,9 +108,7 @@ class CKANLoginThrottle(UsernamePasswordAuthenticator):
         # totp authentication is enabled by default for all users
         # totp can be disabled, if needed, by setting
         # ckanext.security.enable_totp to false in configurations
-        if not asbool(config.get('ckanext.security.enable_totp', True)):
-            return auth_user_name
-        else:
+        if asbool(config.get('ckanext.security.enable_totp', True)):
             # if the CKAN authenticator has successfully authenticated
             # the request and the user wasn't locked out above,
             # then check the TOTP parameter to see if it is valid
@@ -121,6 +118,8 @@ class CKANLoginThrottle(UsernamePasswordAuthenticator):
                 if totp_success:
                     throttle.reset()
                     return totp_success
+        else:
+            return auth_user_name
 
     def authenticate_totp(self, environ, auth_user):
         totp_challenger = SecurityTOTP.get_for_user(auth_user)
