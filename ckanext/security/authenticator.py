@@ -10,8 +10,8 @@ from ckan.lib.authenticator import UsernamePasswordAuthenticator
 from ckan.model import User
 from webob.request import Request
 import ckan.plugins as p
-from ckan.plugins.toolkit import asbool, config
 from ckanext.security.cache.login import LoginThrottle
+from ckanext.security.helpers import security_enable_totp
 from ckanext.security.model import SecurityTOTP, ReplayAttackException
 
 log = logging.getLogger(__name__)
@@ -108,7 +108,7 @@ class CKANLoginThrottle(UsernamePasswordAuthenticator):
         # totp authentication is enabled by default for all users
         # totp can be disabled, if needed, by setting
         # ckanext.security.enable_totp to false in configurations
-        if asbool(config.get('ckanext.security.enable_totp', True)):
+        if security_enable_totp():
             # if the CKAN authenticator has successfully authenticated
             # the request and the user wasn't locked out above,
             # then check the TOTP parameter to see if it is valid
