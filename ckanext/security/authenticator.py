@@ -10,6 +10,7 @@ from ckan.lib.authenticator import UsernamePasswordAuthenticator
 from ckan.model import User
 from webob.request import Request
 import ckan.plugins as p
+from ckan.plugins.toolkit import config
 from ckanext.security.cache.login import LoginThrottle
 from ckanext.security.helpers import security_enable_totp
 from ckanext.security.model import SecurityTOTP, ReplayAttackException
