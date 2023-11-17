@@ -31,7 +31,7 @@ overrides rendering of the login form
   <div id="login-form">
 
     <div id="login-fields">
-      {{ form.input('login', label=_("Username"), id='field-login', value="", error=username_error, classes=["control-medium"]) }}
+      {{ form.input('login', label=_("Username or Email"), id='field-login', value="", error=username_error, classes=["control-medium"]) }}
 
       {{ form.input('password', label=_("Password"), id='field-password', type="password", value="", error=password_error, classes=["control-medium"]) }}
     </div>
@@ -64,7 +64,7 @@ overrides rendering of the login form
 
       <input id="mfa-form-active" name="mfa-form-active" type="hidden" value="" />
       <div class="form-actions">
-        <a id="mfa-help-link" href="/" style="display: none; margin-right: 20px;">{{_('Need help?')}}</a>
+        {# <a id="mfa-help-link" href="/" style="display: none; margin-right: 20px;">{{_('Need help?')}}</a> #}
         <button class="btn btn-primary" type="submit">{{ _('Submit') }}</button>
       </div>
     </div>
