@@ -6,6 +6,7 @@ if six.PY2:
     import pylons
     from ckan.lib.cli import MockTranslator
 
+from ckan import model
 from ckan.lib.authenticator import UsernamePasswordAuthenticator
 from ckan.model import User
 from webob.request import Request
@@ -74,6 +75,10 @@ class CKANLoginThrottle(UsernamePasswordAuthenticator):
         to log into a specific account within a period of time."""
         try:
             user_name = identity['login']
+            user = model.User.by_name(user_name)
+            if not user:
+                user = model.User.by_email(user_name)
+            user_name = user.name
         except KeyError:
             return None
 
