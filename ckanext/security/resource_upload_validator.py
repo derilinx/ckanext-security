@@ -98,6 +98,8 @@ def validate_upload_type(resource):
     filename = resource.get('url')
     if _has_upload(resource):
         field_storage = resource.get('upload')
+        if not field_storage and is_flask_request():
+            field_storage = tk.request.files['upload']
         uploaded_file = field_storage.stream if is_flask_request() else \
             field_storage.file
         filename = field_storage.filename
@@ -131,3 +133,11 @@ def validate_upload_presence(resource):
         raise ValidationError(
             {'File': ['Please upload a file or link to an external resource']}
         )
+
+
+def validate_upload(resource):
+    try:
+        validate_upload_presence(resource)
+    except tk.ValidationError:
+        return
+    validate_upload_type(resource)
