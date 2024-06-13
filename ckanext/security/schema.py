@@ -2,76 +2,81 @@
 
 import six
 
-from ckan.lib.navl.validators import ignore_missing, not_empty, ignore
-from ckan.logic.validators import (
-    name_validator, user_name_validator, user_password_not_empty,
-    user_passwords_match, ignore_not_sysadmin, user_about_validator,
-    user_both_passwords_entered
-)
-from ckanext.security.validators import (
-    user_password_validator, old_username_validator, ensure_str
-)
+from ckan.logic.schema import validator_args
 
 # The main purpose of this file is to modify CKAN's user-related schemas, and
 # to replace the default password validators everywhere. We are also replacing
 # the username validators for endpoints where username changes user to be
 # allowed.
 
+def default_user_schema(old_default_user_schema):
+    @validator_args
+    def ckanext_security_default_user_schema(
+        ignore_missing,
+        unicode_safe,
+        user_password_not_empty,
+        user_password_validator,
+    ):
+        schema = old_default_user_schema()
+        schema['password'] = [
+            user_password_validator,
+            user_password_not_empty,
+            ignore_missing,
+            unicode_safe,
+        ]
 
-def default_user_schema():
-    schema = {
-        'id': [ignore_missing, ensure_str],
-        'name': [not_empty, name_validator, user_name_validator,
-                 ensure_str],
-        'fullname': [ignore_missing, ensure_str],
-        'password': [user_password_validator,
-                     user_password_not_empty,
-                     ignore_missing, ensure_str],
-        'password_hash': [ignore_missing, ignore_not_sysadmin,
-                          ensure_str],
-        'email': [not_empty, ensure_str],
-        'about': [ignore_missing, user_about_validator, ensure_str],
-        'created': [ignore],
-        'openid': [ignore_missing],
-        'sysadmin': [ignore_missing, ignore_not_sysadmin],
-        'apikey': [ignore],
-        'reset_key': [ignore],
-        'activity_streams_email_notifications': [ignore_missing],
-        'state': [ignore_missing],
-    }
-    return schema
+        return schema
+    return ckanext_security_default_user_schema
 
+def user_new_form_schema(old_user_new_form_schema):
+    @validator_args
+    def ckanext_security_user_new_form_schema(
+        user_both_passwords_entered,
+        user_passwords_match,
+        user_password_validator
+    ):
+        schema = old_user_new_form_schema()
 
-def user_new_form_schema():
-    schema = default_user_schema()
+        schema['password1'] = [
+            six.text_type,
+            user_both_passwords_entered,
+            user_password_validator,
+            user_passwords_match,
+        ]
+        return schema
 
-    schema['password1'] = [ensure_str, user_both_passwords_entered,
-                           user_password_validator,
-                           user_passwords_match]
-    schema['password2'] = [ensure_str]
+    return ckanext_security_user_new_form_schema
 
-    return schema
+def user_edit_form_schema(old_user_edit_form_schema):
+    @validator_args
+    def ckanext_security_user_edit_form_schema(
+        ignore_missing,
+        old_username_validator,
+        unicode_safe,
+        user_passwords_match,
+        user_password_validator,
+    ):
+        schema = old_user_edit_form_schema()
 
+        schema['name'] += [old_username_validator]
+        schema['password1'] = [ignore_missing, unicode_safe,
+                               user_password_validator,
+                               user_passwords_match]
 
-def user_edit_form_schema():
-    schema = default_user_schema()
+        return schema
 
-    schema['name'] += [old_username_validator]
-    schema['password'] = [ignore_missing]
-    schema['password1'] = [ignore_missing, ensure_str,
-                           user_password_validator,
-                           user_passwords_match]
-    schema['password2'] = [ignore_missing, ensure_str]
+    return ckanext_security_user_edit_form_schema
 
-    return schema
+def default_update_user_schema(old_default_update_user_schema):
+    @validator_args
+    def ckanext_security_default_update_user_schema(
+        ignore_missing,
+        unicode_safe,
+        user_password_validator,
+    ):
+        schema = old_default_update_user_schema()
+        schema['password'] = [user_password_validator,
+                              ignore_missing, unicode_safe]
 
-
-def default_update_user_schema():
-    schema = default_user_schema()
-
-    schema['name'] = [ignore_missing, name_validator, user_name_validator,
-                      ensure_str]
-    schema['password'] = [user_password_validator,
-                          ignore_missing, ensure_str]
-
-    return schema
+        return schema
+    return ckanext_security_default_update_user_schema
