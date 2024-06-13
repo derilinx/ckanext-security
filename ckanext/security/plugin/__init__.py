@@ -40,13 +40,13 @@ class CkanSecurityPlugin(MixinPlugin, p.SingletonPlugin):
         # `ckan.logic.validators.user_password_validator` instead
         # without success.
         core_schema.default_user_schema = \
-            ext_schema.default_user_schema
+            ext_schema.default_user_schema(core_schema.default_user_schema)
         core_schema.user_new_form_schema = \
-            ext_schema.user_new_form_schema
+            ext_schema.user_new_form_schema(core_schema.user_new_form_schema)
         core_schema.user_edit_form_schema = \
-            ext_schema.user_edit_form_schema
+            ext_schema.user_edit_form_schema(core_schema.user_edit_form_schema)
         core_schema.default_update_user_schema = \
-            ext_schema.default_update_user_schema
+            ext_schema.default_update_user_schema(core_schema.default_update_user_schema)
 
         tk.add_template_directory(config, '../templates')
         tk.add_resource('../fanstatic', 'security')
