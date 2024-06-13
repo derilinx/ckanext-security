@@ -35,18 +35,9 @@ class CkanSecurityPlugin(MixinPlugin, p.SingletonPlugin):
     def update_config(self, config):
         define_security_tables()  # map security models to db schema
 
-        # Monkeypatching all user schemas in order to enforce a stronger
-        # password policy. I tried monkeypatching
-        # `ckan.logic.validators.user_password_validator` instead
-        # without success.
-        core_schema.default_user_schema = \
-            ext_schema.default_user_schema(core_schema.default_user_schema)
-        core_schema.user_new_form_schema = \
-            ext_schema.user_new_form_schema(core_schema.user_new_form_schema)
+        # Add validation for unchangeable usernames
         core_schema.user_edit_form_schema = \
             ext_schema.user_edit_form_schema(core_schema.user_edit_form_schema)
-        core_schema.default_update_user_schema = \
-            ext_schema.default_update_user_schema(core_schema.default_update_user_schema)
 
         tk.add_template_directory(config, '../templates')
         tk.add_resource('../fanstatic', 'security')
