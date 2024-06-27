@@ -2,12 +2,8 @@ from builtins import object
 import logging
 import six
 
-if six.PY2:
-    import pylons
-    from ckan.lib.cli import MockTranslator
-
 from ckan import model
-from ckan.lib.authenticator import UsernamePasswordAuthenticator
+from ckan.lib.authenticator import default_authenticate
 from ckan.model import User
 from webob.request import Request
 import ckan.plugins as p
@@ -66,7 +62,7 @@ def reset_totp(user_name):
     SecurityTOTP.create_for_user(user_name)
 
 
-class CKANLoginThrottle(UsernamePasswordAuthenticator):
+class CKANLoginThrottle:
     p.implements(p.IAuthenticator)
 
     def authenticate(self, environ, identity):
@@ -82,19 +78,12 @@ class CKANLoginThrottle(UsernamePasswordAuthenticator):
         except KeyError:
             return None
 
-        if six.PY2:
-            # TODO: This may need to be removed in CKAN 3+ when
-            # paste/pylons are removed
-            environ['paste.registry'].register(
-                pylons.translator, MockTranslator())
-
         if not ('login' in identity and 'password' in identity):
             return None
 
         # Run through the CKAN auth sequence first, so we can hit the DB
         # in every case and make timing attacks a little more difficult.
-        auth_user_name = super(CKANLoginThrottle, self).authenticate(
-            environ, identity)
+        auth_user_name = default_authenticate(environ, identity)
 
         login_throttle_key = get_login_throttle_key(
             Request(environ), user_name)
