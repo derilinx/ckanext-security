@@ -7,10 +7,13 @@ class RedisClient(object):
     prefix = ''
 
     def __init__(self):
-        host = config['ckanext.security.redis.host']
-        port = config['ckanext.security.redis.port']
-        db = config['ckanext.security.redis.db']
-        self.client = redis.StrictRedis(host=host, port=port, db=db)
+        if config.get('ckanext.security.redis.url', None):
+            self.client = redis.StrictRedis.from_url(url=config.get('ckanext.security.redis.url'))
+        else:
+            host = config['ckanext.security.redis.host']
+            port = config['ckanext.security.redis.port']
+            db = config['ckanext.security.redis.db']
+            self.client = redis.StrictRedis(host=host, port=port, db=db)
 
     def get(self, key):
         return self.client.get(self.prefix + key)

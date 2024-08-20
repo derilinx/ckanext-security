@@ -58,11 +58,13 @@ class CkanSecurityPlugin(MixinPlugin, p.SingletonPlugin):
         validate_upload_presence(resource)
         validate_upload_type(resource)
         pass
+    before_resource_create = before_create
 
     def before_update(self, context, current, resource):
         validate_upload_presence(resource)
         validate_upload_type(resource)
         pass
+    before_resource_update = before_update
 
     # END Hooks for IResourceController
 
