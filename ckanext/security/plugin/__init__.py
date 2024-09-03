@@ -101,6 +101,7 @@ class CkanSecurityPlugin(MixinPlugin, p.SingletonPlugin):
                 auth.security_throttle_address_show,
             'security_reset_totp':
                 auth.security_reset_totp,
+            'user_list': auth.user_list,
         }
     # END Hooks for IAuthFunctions
 
