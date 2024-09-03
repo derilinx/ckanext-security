@@ -116,7 +116,7 @@ class CKANLoginThrottle(UsernamePasswordAuthenticator):
         # ckanext.security.enable_totp to false in configurations
         if not security_enable_totp():
             throttle.reset()
-            return auth_user_name
+            return ckan_auth_result
         
         # if the CKAN authenticator has successfully authenticated
         # the request and the user wasn't locked out above,
