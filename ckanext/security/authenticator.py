@@ -79,6 +79,12 @@ def authenticate(identity):
     except KeyError:
         return None
 
+    # for email logins
+    user = model.User.by_name(user_name)
+    if not user:
+        user = model.User.by_email(user_name)
+    user_name = user.name
+
     login_throttle_key = get_login_throttle_key(
         request, user_name)
     if login_throttle_key is None:
