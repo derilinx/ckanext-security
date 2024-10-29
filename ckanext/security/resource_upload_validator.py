@@ -75,12 +75,15 @@ def _build_mimetypes_and_extensions(filename, file_content):
 
 
 def _has_upload(resource):
-    if is_flask_request():
+    # is_flask_request is now "true", it's just pylons/flask, not are we running in a request context
+    # if we're not, then running this in cli actions fails -- so try this and fall back to the
+    # local version
+    try:
         if 'upload' in tk.request.files:
             return tk.request.files['upload'].filename != ''
         else:
             return False
-    else:
+    except RuntimeError:
         return isinstance(resource.get('upload'), FieldStorage)
 
 
