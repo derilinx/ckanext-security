@@ -40,7 +40,8 @@ overrides rendering of the login form
 
     <div class="form-actions">
       {% block login_button %}
-      <button class="btn btn-primary" type="submit">{{ _('Next') }}</button>
+      {% set button_text = _('Next') if h.security_enable_totp() else _('Submit')%}
+      <button class="btn btn-primary" type="submit">{{ button_text }}</button>
       {% endblock %}
     </div>
   </div>
