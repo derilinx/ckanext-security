@@ -211,7 +211,7 @@ class CKANLoginThrottle():
             if not user:
                 user = model.User.by_email(user_name)
             user_name = user.name
-        except KeyError:
+        except (KeyError, AttributeError) as e:
             return None
 
         login_throttle_key = get_login_throttle_key(
