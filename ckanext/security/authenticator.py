@@ -79,7 +79,7 @@ class CKANLoginThrottle(UsernamePasswordAuthenticator):
             if not user:
                 user = model.User.by_email(user_name)
             user_name = user.name
-        except KeyError:
+        except (KeyError, AttributeError) as e:
             return None
 
         if six.PY2:
