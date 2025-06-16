@@ -7,6 +7,7 @@ overrides rendering of the login form
 
 {% set username_error = true if error_summary %}
 {% set password_error = true if error_summary %}
+{% set button_text = 'Next' if h.security_enable_totp() else 'Login' %}
 
 {% if h.security_enable_totp() %}
   {% asset 'security/mfa_login' %}
@@ -34,7 +35,7 @@ overrides rendering of the login form
 
     <div class="form-actions">
       {% block login_button %}
-      <button class="btn btn-primary" type="submit">{{ _('Next') }}</button>
+      <button class="btn btn-primary" type="submit">{{ _(button_text) }}</button>
       {% endblock %}
     </div>
   </div>
