@@ -138,6 +138,7 @@ def validate_upload_presence(resource):
 def validate_upload(resource):
     try:
         validate_upload_presence(resource)
-    except tk.ValidationError:
+    #werkzeug fails outside of a 
+    except (tk.ValidationError, RuntimeError): 
         return
     validate_upload_type(resource)
