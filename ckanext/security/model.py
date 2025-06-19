@@ -20,17 +20,7 @@ def db_setup():
     if user_security_totp is None:
         define_security_tables()
 
-    if not model.package_table.exists():
-        log.critical("Exiting: can not migrate security model \
-if the database does not exist yet")
-        sys.exit(1)
-        return
-
-    if not user_security_totp.exists():
-        user_security_totp.create()
-        print("Created security TOTP table")
-    else:
-        print("Security TOTP table already exists -- skipping")
+    metadata.create_all(model.meta.engine)
 
 
 def define_security_tables():
