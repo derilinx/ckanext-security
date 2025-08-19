@@ -1,0 +1,8 @@
+# security.txt for vulnerability disclosure
+Contact: mailto:govmtCSIRT@gov.mt
+Encryption: https://gov.mt/pgp-key.txt
+Acknowledgements: https://ictpolicies.gov.mt/acknowledgements
+Policy: https://ictpolicies.gov.mt/GMICT_P_0122_Vulnerability_Disclosure.pdf
+Hiring: https://ictpolicies.gov.mt/careers
+Preferred-Languages: en, mt
+Canonical: https://portal.data.gov.mt/.well-known/security.txt
