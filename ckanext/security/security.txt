@@ -1,6 +1,9 @@
 # security.txt for vulnerability disclosure
 Contact: mailto:govmtCSIRT@gov.mt
-Encryption: https://gov.mt/pgp-key.txt
-Policy: https://ictpolicies.gov.mt/GMICT_P_0122_Vulnerability_Disclosure.pdf
+Contact: mailto:securityoperations.mita@gov.mt
+Expires: 2028-06-23T22:00:00.000Z
+Encryption: pgp key for govmtCSIRT@gov.mt - https://keys.openpgp.org/vks/v1/by-fingerprint/7367D6A8ED0E86054D8960C328A80487BA3FA7AA
 Preferred-Languages: en, mt
+Policy: https://mita.gov.mt/wp-content/uploads/2025/03/GMICT_P_0122_Vulnerability_Disclosure.pdf
+Hiring: https://mita.gov.mt/careers/
 Canonical: https://portal.data.gov.mt/.well-known/security.txt
