@@ -74,16 +74,17 @@ def authenticate(identity):
     # in every case and make timing attacks a little more difficult.
     ckan_auth_result = default_authenticate(identity)
 
+    # DLX custom start: log in by email
     try:
         user_name = identity['login']
-    except KeyError:
+        user = model.User.by_name(user_name)
+        if not user:
+            user = model.User.by_email(user_name)
+        user_name = user.name
+    except (KeyError, AttributeError) as e:
         return None
 
-    # for email logins
-    user = model.User.by_name(user_name)
-    if not user:
-        user = model.User.by_email(user_name)
-    user_name = user.name
+     # DLX custom end: log in by email
 
     login_throttle_key = get_login_throttle_key(
         request, user_name)
@@ -196,63 +197,7 @@ class CKANLoginThrottle():
     p.implements(p.IAuthenticator)
 
     def authenticate(self, environ, identity):
-        
-        """A username/password authenticator that throttles login request
-        by user name, ie only a limited number of attempts can be made
-        to log into a specific account within a period of time."""
-
-        # Run through the CKAN auth sequence first, so we can hit the DB
-        # in every case and make timing attacks a little more difficult.
-        ckan_auth_result = default_authenticate(identity)
-
-        try:
-            user_name = identity['login']
-            user = model.User.by_name(user_name)
-            if not user:
-                user = model.User.by_email(user_name)
-            user_name = user.name
-        except (KeyError, AttributeError) as e:
-            return None
-
-        login_throttle_key = get_login_throttle_key(
-            request, user_name)
-        if login_throttle_key is None:
-            return None
-
-        throttle = LoginThrottle(User.by_name(user_name), login_throttle_key)
-        # Check if there is a lock on the requested user, and abort if
-        # we have a lock.
-        if throttle.is_locked():
-            return None
-
-        if ckan_auth_result is None:
-            # Increment the throttle counter if the login failed.
-            throttle.increment()
-            return None
-
-        # totp authentication is enabled by default for all users
-        # totp can be disabled, if needed, by setting
-        # ckanext.security.enable_totp to false in configurations
-        if not security_enable_totp():
-            throttle.reset()
-            return ckan_auth_result
-
-        # if the CKAN authenticator has successfully authenticated
-        # the request and the user wasn't locked out above,
-        # then check the TOTP parameter to see if it is valid
-        totp_success = authenticate_totp(user_name)
-        # if TOTP was successful -- reset the log in throttle
-        if totp_success:
-            throttle.reset()
-            return ckan_auth_result
-        else:
-            # This means that the login form has been submitted
-            # with an invalid TOTP code, bypassing the ajax
-            # login() workflow in utils.login.
-            # The username and password were fine, but the 2fa
-            # code was missing or invalid
-            throttle.increment()
-            return None
+        return authenticate(identity)
 
 
 class BeakerRedisAuth(object):
