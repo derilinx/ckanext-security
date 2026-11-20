@@ -14,6 +14,7 @@ overrides rendering of the login form
 {% endif %}
 
 <form id="mfa-login-form" action="{{ action }}" method="post" class="form-horizontal">
+  {{ h.csrf_input() }}
   <div class="error-explanation alert alert-error" style="display: none;">
     <p id="invalid-entries">{{ _('The form contains invalid entries:') }}</p>
     <ul>
